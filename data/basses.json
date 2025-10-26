@@ -1,0 +1,82 @@
+[
+  {
+    "id": "b1",
+    "title": "Warm Circuit",
+    "key": "C major",
+    "prog": "C - Am - F - G",
+    "mood": "Hopeful • Nostalgic",
+    "icon": "heart"
+  },
+  {
+    "id": "b2",
+    "title": "Iron Root",
+    "key": "A minor",
+    "prog": "Am - F - C - G",
+    "mood": "Dark • Resolute",
+    "icon": "compass"
+  },
+  {
+    "id": "b3",
+    "title": "Glass Pulse",
+    "key": "E minor",
+    "prog": "Em - C - G - D",
+    "mood": "Airy • Driving",
+    "icon": "waveform"
+  },
+  {
+    "id": "b4",
+    "title": "Low Beacon",
+    "key": "D minor",
+    "prog": "Dm - Bb - F - C",
+    "mood": "Brooding • Wide",
+    "icon": "rings"
+  },
+  {
+    "id": "b5",
+    "title": "Sunny Motion",
+    "key": "G major",
+    "prog": "G - Em - C - D",
+    "mood": "Bright • Open",
+    "icon": "heart"
+  },
+  {
+    "id": "b6",
+    "title": "Syncopated Anchor",
+    "key": "F minor",
+    "prog": "Fm - Db - Ab - Eb",
+    "mood": "Funky • Punchy",
+    "icon": "compass"
+  },
+  {
+    "id": "b7",
+    "title": "Submarine",
+    "key": "C minor",
+    "prog": "Cm - Ab - Eb - Bb",
+    "mood": "Deep • Distant",
+    "icon": "rings"
+  },
+  {
+    "id": "b8",
+    "title": "Walking Line",
+    "key": "Bb major",
+    "prog": "Bb - Gm - Eb - F",
+    "mood": "Groovy • Warm",
+    "icon": "heart"
+  },
+  {
+    "id": "b9",
+    "title": "Prismatic",
+    "key": "A major",
+    "prog": "A - F#m - D - E",
+    "mood": "Urgent • Clean",
+    "icon": "waveform"
+  },
+  {
+    "id": "b10",
+    "title": "Hollow Root",
+    "key": "E flat minor",
+    "prog": "Ebm - Bbm - Ab - Gb",
+    "mood": "Mournful • Lush",
+    "icon": "compass"
+  }
+]
