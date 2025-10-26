@@ -7,7 +7,6 @@
 
   <!-- Tailwind CDN + custom theme -->
   <script>
-    // Tailwind quick config (studio aesthetic)
     tailwind = { config: {
       theme: {
         extend: {
@@ -36,12 +35,10 @@
   <!-- Tone.js audio library -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.8.49/Tone.js"></script>
 
-  <!-- small custom styles -->
   <style>
     :root{color-scheme: dark}
-    body{background:linear-gradient(180deg,#071019 0%,#0a1116 100%);font-family:Inter,system-ui,-apple-system}
+    body{background:linear-gradient(180deg,#071019 0%,#0a1116 100%);font-family:Inter,system-ui,-apple-system;min-height:100vh}
 
-    /* Enhanced card styling with smooth transitions */
     .card {
       background: linear-gradient(135deg, rgba(255,255,255,0.025), rgba(255,255,255,0.01));
       border:1px solid rgba(255,255,255,0.04);
@@ -55,155 +52,102 @@
       border-color: rgba(110,231,183,0.15);
     }
 
-    /* Step sequencer grid with enhanced visual feedback */
+    /* Category choice buttons */
+    .category-btn {
+      background: linear-gradient(135deg, rgba(255,255,255,0.03), rgba(255,255,255,0.01));
+      border: 2px solid rgba(255,255,255,0.08);
+      transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+    .category-btn:hover {
+      transform: translateY(-4px) scale(1.02);
+      border-color: rgba(110,231,183,0.4);
+      background: linear-gradient(135deg, rgba(110,231,183,0.08), rgba(110,231,183,0.03));
+      box-shadow: 0 12px 40px rgba(110,231,183,0.2);
+    }
+
+    /* Slot cards */
+    .slot-card {
+      background: linear-gradient(135deg, rgba(255,255,255,0.03), rgba(255,255,255,0.01));
+      border: 2px dashed rgba(255,255,255,0.1);
+      transition: all 0.3s ease;
+    }
+    .slot-card.filled {
+      border-style: solid;
+      border-color: rgba(110,231,183,0.3);
+      background: linear-gradient(135deg, rgba(110,231,183,0.05), rgba(110,231,183,0.02));
+    }
+    .slot-card.empty:hover {
+      border-color: rgba(110,231,183,0.3);
+      background: rgba(110,231,183,0.02);
+    }
+
+    /* Pattern selection cards */
+    .pattern-card {
+      cursor: pointer;
+      background: linear-gradient(135deg, rgba(255,255,255,0.025), rgba(255,255,255,0.01));
+      border:1px solid rgba(255,255,255,0.06);
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    .pattern-card:hover {
+      transform: translateY(-3px);
+      border-color: rgba(110,231,183,0.3);
+      box-shadow: 0 8px 24px rgba(110,231,183,0.15);
+    }
+    .pattern-card.selected {
+      border-color: rgba(110,231,183,0.6);
+      background: linear-gradient(135deg, rgba(110,231,183,0.1), rgba(110,231,183,0.05));
+      box-shadow: 0 8px 32px rgba(110,231,183,0.25);
+    }
+
+    /* Step grid */
     .step {
       width:100%;
       padding-top:100%;
       position:relative;
-      border-radius:6px;
+      border-radius:4px;
       background:rgba(255,255,255,0.02);
       border: 1px solid rgba(255,255,255,0.05);
-      transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
-      cursor: pointer;
-      overflow: hidden;
     }
-
-    /* Subtle pulse on hover */
-    .step:hover {
-      background:rgba(255,255,255,0.06);
-      transform: scale(1.08);
-      border-color: rgba(110,231,183,0.2);
-      animation: stepPulse 1.5s cubic-bezier(0.4, 0, 0.6, 1) infinite;
-    }
-
-    /* Active step state */
-    .step.on{
+    .step.on {
       background: linear-gradient(135deg,#6ee7b7,#34d399);
-      box-shadow:0 4px 16px rgba(46,185,128,0.25), 0 0 12px rgba(110,231,183,0.15);
+      box-shadow:0 2px 8px rgba(46,185,128,0.2);
       border-color: rgba(110,231,183,0.4);
-      transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
     }
 
-    /* Active step hover with enhanced glow */
-    .step.on:hover {
-      box-shadow:0 6px 24px rgba(46,185,128,0.45), 0 0 20px rgba(110,231,183,0.3);
-      transform: scale(1.1);
-      animation: stepGlow 1.2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
-    }
-
-    /* Progressive disclosure: show step number on hover */
-    .step span {
-      position:absolute;
-      inset:0;
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      font-size:9px;
-      font-weight:600;
-      color:transparent;
-      transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
-      pointer-events: none;
-    }
-
-    .step:hover span {
-      color:rgba(255,255,255,0.5);
-      font-size:10px;
-    }
-
-    .step.on span {
-      color:rgba(15,20,22,0.6);
-    }
-
-    .step.on:hover span {
-      color:rgba(15,20,22,0.8);
-      font-size:11px;
-    }
-
-    /* Pulse animation for inactive steps */
-    @keyframes stepPulse {
-      0%, 100% {
-        box-shadow: 0 0 0 rgba(110,231,183,0.1);
-      }
-      50% {
-        box-shadow: 0 0 12px rgba(110,231,183,0.2), 0 0 4px rgba(110,231,183,0.15);
-      }
-    }
-
-    /* Glow animation for active steps */
-    @keyframes stepGlow {
-      0%, 100% {
-        box-shadow:0 6px 24px rgba(46,185,128,0.45), 0 0 20px rgba(110,231,183,0.3);
-      }
-      50% {
-        box-shadow:0 8px 32px rgba(46,185,128,0.6), 0 0 28px rgba(110,231,183,0.45);
-      }
-    }
-
-    /* Ripple effect on click */
-    @keyframes ripple {
-      from {
-        transform: scale(0);
-        opacity: 0.6;
-      }
-      to {
-        transform: scale(2.5);
-        opacity: 0;
-      }
-    }
-
-    .step::after {
-      content: '';
-      position: absolute;
-      inset: 0;
+    /* Progress dots */
+    .progress-dot {
+      width: 10px;
+      height: 10px;
       border-radius: 50%;
-      background: radial-gradient(circle, rgba(110,231,183,0.6), transparent 70%);
-      transform: scale(0);
-      opacity: 0;
-      pointer-events: none;
+      background: rgba(255,255,255,0.2);
+      transition: all 0.3s ease;
+    }
+    .progress-dot.active {
+      background: linear-gradient(135deg, #6ee7b7, #34d399);
+      box-shadow: 0 0 12px rgba(110,231,183,0.5);
+      transform: scale(1.3);
+    }
+    .progress-dot.completed {
+      background: rgba(110,231,183,0.6);
     }
 
-    .step:active::after {
-      animation: ripple 0.6s cubic-bezier(0, 0, 0.2, 1);
+    .muted{ color:#9fb1b0; }
+    .mono { font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, "Roboto Mono", monospace; font-size:12px }
+
+    /* View transitions */
+    .view {
+      display: none;
+      animation: fadeIn 0.4s ease-out;
+    }
+    .view.active {
+      display: block;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
     }
 
-    /* Keyboard focus state for accessibility */
-    .step:focus-visible {
-      outline: 2px solid rgba(110,231,183,0.6);
-      outline-offset: 2px;
-      transform: scale(1.06);
-    }
-
-    /* Icon and button enhancements */
-    .icon-btn svg{
-      transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
-      filter: drop-shadow(0 2px 8px rgba(110,231,183,0.15));
-    }
-    .icon-btn:hover svg{
-      transform:translateY(-3px) scale(1.08);
-      filter: drop-shadow(0 4px 12px rgba(110,231,183,0.3));
-    }
-
-    /* Button hover states */
-    button {
-      transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-    }
-    button:hover:not(:disabled) {
-      transform: translateY(-1px);
-    }
-    button:active:not(:disabled) {
-      transform: translateY(0);
-    }
-
-    /* Primary accent button glow effect */
-    #playBtn {
-      box-shadow: 0 4px 16px rgba(110,231,183,0.2);
-    }
-    #playBtn:hover:not(:disabled) {
-      box-shadow: 0 6px 24px rgba(110,231,183,0.35);
-      transform: translateY(-2px);
-    }
-
-    /* Range slider enhancement */
+    /* Range slider */
     input[type="range"] {
       cursor: pointer;
       -webkit-appearance: none;
@@ -214,18 +158,12 @@
     }
     input[type="range"]::-webkit-slider-thumb {
       -webkit-appearance: none;
-      appearance: none;
       width: 16px;
       height: 16px;
       border-radius: 50%;
       background: linear-gradient(135deg, #6ee7b7, #34d399);
       cursor: pointer;
       box-shadow: 0 2px 8px rgba(110,231,183,0.3);
-      transition: all 0.2s ease;
-    }
-    input[type="range"]::-webkit-slider-thumb:hover {
-      transform: scale(1.15);
-      box-shadow: 0 4px 12px rgba(110,231,183,0.5);
     }
     input[type="range"]::-moz-range-thumb {
       width: 16px;
@@ -237,202 +175,226 @@
       box-shadow: 0 2px 8px rgba(110,231,183,0.3);
     }
 
-    .muted{ color:#9fb1b0; }
-    .mono { font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, "Roboto Mono", monospace; font-size:12px }
-
-    /* Smooth fade-in animation for cards */
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(10px); }
-      to { opacity: 1; transform: translateY(0); }
+    button {
+      transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
     }
-    .card {
-      animation: fadeIn 0.4s ease-out backwards;
+    button:hover:not(:disabled) {
+      transform: translateY(-1px);
     }
-    .card:nth-child(2) { animation-delay: 0.05s; }
-    .card:nth-child(3) { animation-delay: 0.1s; }
-    .card:nth-child(4) { animation-delay: 0.15s; }
-    .card:nth-child(5) { animation-delay: 0.2s; }
+    button:active:not(:disabled) {
+      transform: translateY(0);
+    }
   </style>
 </head>
-<body class="text-studio-100 min-h-screen">
+<body class="text-studio-100">
 
-  <header class="p-4 lg:p-6 flex flex-wrap items-center justify-between gap-4">
-    <div class="flex items-center gap-2 md:gap-4">
-      <!-- Logo (rings svg inline) -->
-      <div class="p-2 md:p-3 rounded-lg card flex items-center gap-2 md:gap-3">
-        <div class="w-8 h-8 md:w-10 md:h-10 flex items-center justify-center">
-          <svg viewBox="0 0 48 48" class="w-6 h-6 md:w-8 md:h-8" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Header -->
+  <header class="p-4 lg:p-6 border-b border-studio-700/20">
+    <div class="max-w-6xl mx-auto flex items-center justify-between">
+      <div class="flex items-center gap-3">
+        <div class="w-10 h-10 flex items-center justify-center">
+          <svg viewBox="0 0 48 48" class="w-8 h-8" fill="none" xmlns="http://www.w3.org/2000/svg">
             <circle cx="24" cy="24" r="10" stroke="#6ee7b7" stroke-width="1.5" opacity="0.95"/>
             <circle cx="24" cy="24" r="16" stroke="#34d399" stroke-width="1.2" opacity="0.7"/>
             <circle cx="24" cy="24" r="22" stroke="#a7f3d0" stroke-width="0.9" opacity="0.45"/>
           </svg>
         </div>
         <div>
-          <div class="text-sm md:text-base font-semibold tracking-tight">BeatGrid</div>
-          <div class="text-xs muted hidden sm:block">Studio Edition — modular patterns</div>
+          <div class="text-lg font-semibold tracking-tight">BeatGrid</div>
+          <div class="text-xs muted hidden sm:block">Studio Edition</div>
         </div>
       </div>
-      <nav class="hidden lg:flex gap-2 xl:gap-3 ml-2 xl:ml-4">
-        <button id="seedRandom" class="px-3 py-1.5 rounded-lg text-sm bg-studio-800/40 hover:bg-studio-800/70 border border-studio-700/40">Randomize</button>
-        <button id="formatClaude" class="px-3 py-1.5 rounded-lg text-sm bg-studio-800/40 hover:bg-studio-800/70 border border-studio-700/40">Format for LLM</button>
-      </nav>
-    </div>
-
-    <div class="flex flex-wrap items-center gap-2 md:gap-3">
-      <div class="flex items-center gap-2">
-        <button id="playBtn" class="px-3 md:px-4 py-1.5 md:py-2 rounded-lg bg-accent border border-accent text-studio-900 font-semibold text-sm hover:bg-accent-600">▶ Play</button>
-        <button id="stopBtn" class="px-3 md:px-4 py-1.5 md:py-2 rounded-lg bg-studio-800/50 border border-studio-700/40 text-sm muted" disabled>■ Stop</button>
-      </div>
-      <div class="hidden sm:flex items-center gap-2 md:gap-3">
-        <div class="text-right">
-          <div class="text-xs muted">Tempo</div>
-          <div class="font-semibold text-sm" id="tempoLabel">170 BPM</div>
-        </div>
-        <input id="tempo" type="range" min="160" max="180" value="170" class="w-32 md:w-40" />
-      </div>
+      <button id="resetBtn" class="px-3 py-1.5 rounded-lg text-sm bg-studio-800/40 hover:bg-studio-800/70 border border-studio-700/40">
+        Start Over
+      </button>
     </div>
   </header>
 
-  <main class="p-6 grid grid-cols-1 md:grid-cols-3 gap-6">
-    <!-- DRUMS -->
-    <section id="drumCol" class="">
-      <div class="flex items-center justify-between mb-3">
-        <h2 class="text-lg font-semibold">Drum Kits</h2>
-        <div class="muted text-sm">2 bars — 32 steps</div>
+  <main class="p-4 lg:p-8 max-w-6xl mx-auto">
+
+    <!-- VIEW 1: Start Screen -->
+    <div id="startView" class="view active">
+      <div class="min-h-[70vh] flex flex-col items-center justify-center">
+        <div class="text-center mb-12">
+          <h1 class="text-3xl md:text-4xl font-bold mb-3">Build Your Beat</h1>
+          <p class="text-lg muted">What do you want to start with?</p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 w-full max-w-3xl">
+          <!-- Drums -->
+          <button data-category="drum" class="category-btn p-8 rounded-2xl text-center">
+            <div class="text-5xl mb-4">🥁</div>
+            <div class="text-xl font-semibold mb-2">Drums</div>
+            <div class="text-sm muted">Start with rhythm</div>
+          </button>
+
+          <!-- Bass -->
+          <button data-category="bass" class="category-btn p-8 rounded-2xl text-center">
+            <div class="text-5xl mb-4">🎸</div>
+            <div class="text-xl font-semibold mb-2">Bass</div>
+            <div class="text-sm muted">Start with harmony</div>
+          </button>
+
+          <!-- Lead -->
+          <button data-category="lead" class="category-btn p-8 rounded-2xl text-center">
+            <div class="text-5xl mb-4">🎹</div>
+            <div class="text-xl font-semibold mb-2">Lead</div>
+            <div class="text-sm muted">Start with melody</div>
+          </button>
+        </div>
       </div>
-      <div id="drumGrid" class="grid grid-cols-1 gap-4"></div>
-    </section>
-
-    <!-- BASS -->
-    <section id="bassCol" class="">
-      <div class="flex items-center justify-between mb-3">
-        <h2 class="text-lg font-semibold">Bass & Rhythm</h2>
-        <div class="muted text-sm">Hints / progressions</div>
-      </div>
-      <div id="bassGrid" class="grid grid-cols-1 gap-4"></div>
-    </section>
-
-    <!-- LEADS -->
-    <section id="leadCol" class="">
-      <div class="flex items-center justify-between mb-3">
-        <h2 class="text-lg font-semibold">Leads / Motifs</h2>
-        <div class="muted text-sm">Scales • Degrees</div>
-      </div>
-      <div id="leadGrid" class="grid grid-cols-1 gap-4"></div>
-    </section>
-  </main>
-
-  <footer class="p-4 lg:p-6 flex flex-col md:flex-row items-center justify-between gap-3 md:gap-4 border-t border-studio-700/20">
-    <div class="text-xs md:text-sm muted tracking-wide">Loop • Listen • Recalibrate — studio motif</div>
-
-    <!-- Desktop: Show all buttons -->
-    <div class="hidden md:flex flex-wrap gap-2 justify-end">
-      <button id="copySelection" class="px-3 py-2 rounded-lg bg-studio-800/50 border border-studio-700/40 text-sm muted hover:bg-studio-800/70 hover:text-accent transition-colors">Copy Selected (LLM)</button>
-      <button id="downloadSelection" class="px-3 py-2 rounded-lg bg-studio-800/50 border border-studio-700/40 text-sm muted hover:bg-studio-800/70 hover:text-accent transition-colors">Download Selection</button>
-      <button id="exportAll" class="px-3 py-2 rounded-lg bg-accent/10 border border-accent/30 text-accent text-sm hover:bg-accent/20 transition-colors">Export All</button>
-      <button id="saveGist" class="px-3 py-2 rounded-lg bg-studio-800/50 border border-studio-700/40 text-sm muted hover:bg-studio-800/70 transition-colors" title="Save to GitHub Gist">Save Gist</button>
-      <button id="formatClaude" class="px-3 py-2 rounded-lg bg-studio-800/50 border border-studio-700/40 text-sm muted hover:bg-studio-800/70 transition-colors">Format for LLM</button>
-      <button id="clearSession" class="px-3 py-2 rounded-lg bg-studio-800/50 border border-studio-700/40 text-sm muted hover:bg-studio-800/70 hover:text-red-400 transition-colors" title="Clear saved session state">Clear Session</button>
     </div>
 
-    <!-- Mobile: Export menu button -->
-    <div class="md:hidden w-full">
-      <button id="mobileExportBtn" class="w-full min-h-[44px] px-4 py-3 rounded-lg bg-accent/10 border border-accent/30 text-accent text-base font-medium hover:bg-accent/20 transition-colors flex items-center justify-center gap-2">
-        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/>
-        </svg>
-        <span>Export & Actions</span>
-      </button>
-    </div>
-  </footer>
+    <!-- VIEW 2: Pattern Selection -->
+    <div id="selectionView" class="view">
+      <!-- Progress indicator -->
+      <div class="flex items-center justify-center gap-3 mb-8">
+        <div class="progress-dot" data-step="0"></div>
+        <div class="progress-dot" data-step="1"></div>
+        <div class="progress-dot" data-step="2"></div>
+      </div>
 
-  <!-- Mobile Export Menu (hidden by default) -->
-  <div id="mobileExportMenu" class="fixed inset-0 bg-studio-900/95 backdrop-blur-sm z-50 hidden">
-    <div class="flex flex-col h-full">
-      <!-- Menu Header -->
-      <div class="p-4 border-b border-studio-700/30 flex items-center justify-between">
-        <h3 class="text-lg font-semibold">Export & Actions</h3>
-        <button id="closeMobileMenu" class="min-h-[44px] min-w-[44px] flex items-center justify-center rounded-lg hover:bg-studio-800/50 transition-colors">
-          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
-          </svg>
+      <!-- Selection header -->
+      <div class="text-center mb-8">
+        <h2 class="text-2xl md:text-3xl font-bold mb-2" id="selectionTitle">Choose your pattern</h2>
+        <p class="text-sm muted" id="selectionSubtitle">Step 1 of 3</p>
+      </div>
+
+      <!-- Pattern grid -->
+      <div id="patternGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-8">
+        <!-- Patterns will be inserted here -->
+      </div>
+
+      <!-- Navigation buttons -->
+      <div class="flex items-center justify-between mt-8">
+        <button id="backBtn" class="px-6 py-3 rounded-lg bg-studio-800/50 border border-studio-700/40 hover:bg-studio-800/70 disabled:opacity-50 disabled:cursor-not-allowed">
+          ← Back
+        </button>
+        <button id="continueBtn" class="px-6 py-3 rounded-lg bg-accent border border-accent text-studio-900 font-semibold hover:bg-accent-600 disabled:opacity-50 disabled:cursor-not-allowed" disabled>
+          Continue →
         </button>
       </div>
+    </div>
 
-      <!-- Menu Content -->
-      <div class="flex-1 overflow-y-auto p-4 space-y-3">
-        <!-- Export Section -->
-        <div class="space-y-2">
-          <div class="text-xs font-semibold text-accent uppercase tracking-wider mb-3">Export Options</div>
+    <!-- VIEW 3: Composition Studio -->
+    <div id="compositionView" class="view">
+      <div class="text-center mb-8">
+        <h2 class="text-2xl md:text-3xl font-bold mb-2">Your Composition</h2>
+        <p class="text-sm muted">Loop • Listen • Recalibrate</p>
+      </div>
 
-          <button data-action="copySelection" class="mobile-menu-btn w-full min-h-[52px] px-4 py-3 rounded-lg bg-studio-800/50 border border-studio-700/40 text-left hover:bg-studio-800/70 hover:border-accent/30 transition-all flex items-center gap-3">
-            <svg class="w-5 h-5 text-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/>
-            </svg>
-            <div>
-              <div class="font-medium">Copy Selected (LLM)</div>
-              <div class="text-xs text-muted">Copy current selection as markdown</div>
+      <!-- Slot cards -->
+      <div class="space-y-4 max-w-3xl mx-auto mb-8">
+        <!-- Drum Slot -->
+        <div id="drumSlot" class="slot-card empty rounded-xl p-6">
+          <div class="flex items-center justify-between mb-4">
+            <div class="flex items-center gap-3">
+              <div class="text-3xl">🥁</div>
+              <div>
+                <div class="font-semibold">Drum Slot</div>
+                <div class="text-xs muted">Rhythm foundation</div>
+              </div>
             </div>
-          </button>
-
-          <button data-action="downloadSelection" class="mobile-menu-btn w-full min-h-[52px] px-4 py-3 rounded-lg bg-studio-800/50 border border-studio-700/40 text-left hover:bg-studio-800/70 hover:border-accent/30 transition-all flex items-center gap-3">
-            <svg class="w-5 h-5 text-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M9 19l3 3m0 0l3-3m-3 3V10"/>
-            </svg>
-            <div>
-              <div class="font-medium">Download Selection</div>
-              <div class="text-xs text-muted">Save selected patterns as JSON</div>
-            </div>
-          </button>
-
-          <button data-action="exportAll" class="mobile-menu-btn w-full min-h-[52px] px-4 py-3 rounded-lg bg-accent/10 border border-accent/30 text-accent text-left hover:bg-accent/20 transition-all flex items-center gap-3">
-            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L9 8m4-4v12"/>
-            </svg>
-            <div>
-              <div class="font-medium">Export All Patterns</div>
-              <div class="text-xs opacity-75">Download complete pattern library</div>
-            </div>
-          </button>
-
-          <button data-action="formatClaude" class="mobile-menu-btn w-full min-h-[52px] px-4 py-3 rounded-lg bg-studio-800/50 border border-studio-700/40 text-left hover:bg-studio-800/70 hover:border-accent/30 transition-all flex items-center gap-3">
-            <svg class="w-5 h-5 text-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
-            </svg>
-            <div>
-              <div class="font-medium">Format for LLM</div>
-              <div class="text-xs text-muted">Copy all patterns in LLM format</div>
-            </div>
-          </button>
-
-          <button data-action="saveGist" class="mobile-menu-btn w-full min-h-[52px] px-4 py-3 rounded-lg bg-studio-800/50 border border-studio-700/40 text-left hover:bg-studio-800/70 hover:border-accent/30 transition-all flex items-center gap-3">
-            <svg class="w-5 h-5 text-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7v8a2 2 0 002 2h6M8 7V5a2 2 0 012-2h4.586a1 1 0 01.707.293l4.414 4.414a1 1 0 01.293.707V15a2 2 0 01-2 2h-2M8 7H6a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2v-2"/>
-            </svg>
-            <div>
-              <div class="font-medium">Save to GitHub Gist</div>
-              <div class="text-xs text-muted">Requires GitHub token</div>
-            </div>
-          </button>
+            <button data-action="change" data-slot="drum" class="slot-change-btn hidden px-3 py-1.5 rounded-lg text-sm bg-studio-800/40 hover:bg-studio-800/70 border border-studio-700/40">
+              Change
+            </button>
+          </div>
+          <div class="slot-content">
+            <button data-slot="drum" class="slot-add-btn w-full py-8 border-2 border-dashed border-studio-700/30 rounded-lg hover:border-accent/30 hover:bg-accent/5 transition-all">
+              <div class="text-accent text-lg">+ Add Drum Pattern</div>
+            </button>
+          </div>
         </div>
 
-        <!-- Session Section -->
-        <div class="space-y-2 pt-4 border-t border-studio-700/30">
-          <div class="text-xs font-semibold text-muted uppercase tracking-wider mb-3">Session</div>
-
-          <button data-action="clearSession" class="mobile-menu-btn w-full min-h-[52px] px-4 py-3 rounded-lg bg-studio-800/50 border border-studio-700/40 text-left hover:bg-studio-800/70 hover:border-red-400/30 hover:text-red-400 transition-all flex items-center gap-3">
-            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
-            </svg>
-            <div>
-              <div class="font-medium">Clear Session</div>
-              <div class="text-xs text-muted">Reset all selections and tempo</div>
+        <!-- Bass Slot -->
+        <div id="bassSlot" class="slot-card empty rounded-xl p-6">
+          <div class="flex items-center justify-between mb-4">
+            <div class="flex items-center gap-3">
+              <div class="text-3xl">🎸</div>
+              <div>
+                <div class="font-semibold">Bass Slot</div>
+                <div class="text-xs muted">Harmonic progression</div>
+              </div>
             </div>
+            <button data-action="change" data-slot="bass" class="slot-change-btn hidden px-3 py-1.5 rounded-lg text-sm bg-studio-800/40 hover:bg-studio-800/70 border border-studio-700/40">
+              Change
+            </button>
+          </div>
+          <div class="slot-content">
+            <button data-slot="bass" class="slot-add-btn w-full py-8 border-2 border-dashed border-studio-700/30 rounded-lg hover:border-accent/30 hover:bg-accent/5 transition-all">
+              <div class="text-accent text-lg">+ Add Bass Pattern</div>
+            </button>
+          </div>
+        </div>
+
+        <!-- Lead Slot -->
+        <div id="leadSlot" class="slot-card empty rounded-xl p-6">
+          <div class="flex items-center justify-between mb-4">
+            <div class="flex items-center gap-3">
+              <div class="text-3xl">🎹</div>
+              <div>
+                <div class="font-semibold">Lead Slot</div>
+                <div class="text-xs muted">Melodic motif</div>
+              </div>
+            </div>
+            <button data-action="change" data-slot="lead" class="slot-change-btn hidden px-3 py-1.5 rounded-lg text-sm bg-studio-800/40 hover:bg-studio-800/70 border border-studio-700/40">
+              Change
+            </button>
+          </div>
+          <div class="slot-content">
+            <button data-slot="lead" class="slot-add-btn w-full py-8 border-2 border-dashed border-studio-700/30 rounded-lg hover:border-accent/30 hover:bg-accent/5 transition-all">
+              <div class="text-accent text-lg">+ Add Lead Pattern</div>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Playback Controls -->
+      <div class="max-w-3xl mx-auto card rounded-xl p-6 mb-6">
+        <div class="flex flex-col md:flex-row items-center justify-between gap-4">
+          <div class="flex items-center gap-3">
+            <button id="playBtn" class="px-6 py-3 rounded-lg bg-accent border border-accent text-studio-900 font-semibold hover:bg-accent-600 disabled:opacity-50 disabled:cursor-not-allowed" disabled>
+              ▶ Play
+            </button>
+            <button id="stopBtn" class="px-6 py-3 rounded-lg bg-studio-800/50 border border-studio-700/40 hover:bg-studio-800/70 disabled:opacity-50" disabled>
+              ■ Stop
+            </button>
+          </div>
+          <div class="flex items-center gap-3">
+            <div class="text-sm muted">Tempo</div>
+            <div class="font-semibold" id="tempoLabel">170 BPM</div>
+            <input id="tempo" type="range" min="160" max="180" value="170" class="w-32" />
+          </div>
+        </div>
+      </div>
+
+      <!-- Export Section -->
+      <div class="max-w-3xl mx-auto">
+        <div class="text-center mb-4">
+          <button id="exportMenuBtn" class="px-6 py-3 rounded-lg bg-accent/10 border border-accent/30 text-accent hover:bg-accent/20 disabled:opacity-50 disabled:cursor-not-allowed" disabled>
+            Export Options ▼
           </button>
+        </div>
+        <div id="exportMenu" class="hidden card rounded-xl p-6">
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+            <button id="copySelection" class="px-4 py-3 rounded-lg bg-studio-800/50 border border-studio-700/40 text-sm hover:bg-studio-800/70 hover:text-accent transition-colors text-left">
+              📋 Copy as LLM Format
+            </button>
+            <button id="downloadSelection" class="px-4 py-3 rounded-lg bg-studio-800/50 border border-studio-700/40 text-sm hover:bg-studio-800/70 hover:text-accent transition-colors text-left">
+              💾 Download as JSON
+            </button>
+            <button id="exportAll" class="px-4 py-3 rounded-lg bg-studio-800/50 border border-studio-700/40 text-sm hover:bg-studio-800/70 hover:text-accent transition-colors text-left">
+              📦 Export All Patterns
+            </button>
+            <button id="saveGist" class="px-4 py-3 rounded-lg bg-studio-800/50 border border-studio-700/40 text-sm hover:bg-studio-800/70 transition-colors text-left">
+              🔗 Save to GitHub Gist
+            </button>
+          </div>
         </div>
       </div>
     </div>
-  </div>
+
+  </main>
 
   <!-- JS modules -->
   <script type="module">
@@ -440,7 +402,6 @@
     import { icons } from './js/icons.js';
     import { renderApp } from './js/app.js';
 
-    // expose data to app
     renderApp({ drums, basses, leads, icons });
   </script>
 </body>
