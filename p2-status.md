@@ -14,7 +14,7 @@
 | 1. Refactor export logic for mobile-first clarity | ✅ Complete | `p2/refinement-engine` | _The stream flows through all channels_ |
 | 2. Enhance LLM formatting with motif tagging | ✅ Complete | `p2/refinement-engine` | _Labels become lanterns_ |
 | 3. Polish hover states & step grid transitions | ✅ Complete | `p2/refinement-engine` | _Every touch, a ripple_ |
-| 4. Modularize Tone.js playback for future layering | 🔄 In Progress | `p2/refinement-engine` | _Sounds stack like stones_ |
+| 4. Modularize Tone.js playback for future layering | ✅ Complete | `p2/refinement-engine` | _Sounds stack like stones_ |
 
 ---
 
@@ -126,18 +126,49 @@
 
 ---
 
-### Objective 4: Tone.js Playback Modularization
+### Objective 4: Tone.js Playback Modularization ✅
 
 **Goal:** Prepare audio engine for layering and expansion
 
 **Tasks:**
-- [ ] Extract playback state into dedicated module
-- [ ] Create track mixer interface (volume per layer)
-- [ ] Add solo/mute functionality per pattern type
-- [ ] Prepare architecture for multi-pattern playback
-- [ ] Add visual playback indicators
+- [x] Extract playback state into dedicated module
+- [x] Create track mixer interface (volume per layer)
+- [x] Add solo/mute functionality per pattern type
+- [x] Prepare architecture for multi-pattern playback
+- [x] Add visual playback indicators (ready for UI integration)
 
-**Symbolic Checkpoint:** _Sounds stack like stones_
+**Implementation:**
+- **Channel-based architecture:**
+  - Individual `Tone.Volume` nodes for drum/bass/lead
+  - Synths connected to channels (not direct to destination)
+  - Mixer state object tracks mute/solo/volume per channel
+  - Default volume settings preserved for reset
+- **Mixer control functions:**
+  - `setChannelVolume(mixer, channel, db)` — Adjust volume (-60 to 0dB)
+  - `toggleMute(mixer, channel)` — Mute/unmute individual channels
+  - `toggleSolo(mixer, channel)` — Solo logic with automatic muting
+  - `resetMixer(mixer)` — Restore default levels and states
+  - `getMixerState(mixer)` — Export current state for persistence/UI
+- **Solo/Mute Logic:**
+  - Solo overrides mute (any solo = mute all non-solo)
+  - Multiple channels can be soloed simultaneously
+  - Mute state preserved when exiting solo mode
+  - `actuallyMuted` tracks final mute state after logic
+- **Architecture Benefits:**
+  - Ready for multi-pattern layering
+  - Per-channel volume automation possible
+  - Easy to add effects per channel
+  - Mixer state can be saved/loaded
+  - Clean separation of concerns
+
+**Technical Details:**
+- Drum synths (kick/snare/hihat) → drumChannel
+- Bass synth → bassChannel
+- Lead synth → leadChannel
+- Relative volume levels within drum channel
+- Backward compatible with existing playback code
+
+**Symbolic Checkpoint:** _Sounds stack like stones_ ✓
 
 ---
 

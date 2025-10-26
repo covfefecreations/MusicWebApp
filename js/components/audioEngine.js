@@ -1,25 +1,30 @@
 /**
  * Audio Engine Component
- * Handles all Tone.js audio synthesis and playback
+ * Modular Tone.js audio synthesis with mixer and solo/mute controls
  */
 
 /**
- * Creates and configures all audio synthesizers
- * @returns {object} Audio synths and transport controls
+ * Creates and configures all audio synthesizers with channel mixers
+ * @returns {object} Audio synths, channels, and mixer controls
  */
 export function createAudioEngine() {
+  // Create individual channel volumes for mixing
+  const drumChannel = new Tone.Volume(-6).toDestination();
+  const bassChannel = new Tone.Volume(-8).toDestination();
+  const leadChannel = new Tone.Volume(-12).toDestination();
+
   // Drum synths (kick, snare, hihat simulation)
   const kick = new Tone.MembraneSynth({
     pitchDecay: 0.05,
     octaves: 10,
     oscillator: { type: 'sine' },
     envelope: { attack: 0.001, decay: 0.4, sustain: 0.01, release: 1.4 }
-  }).toDestination();
+  }).connect(drumChannel);
 
   const snare = new Tone.NoiseSynth({
     noise: { type: 'white' },
     envelope: { attack: 0.001, decay: 0.2, sustain: 0 }
-  }).toDestination();
+  }).connect(drumChannel);
 
   const hihat = new Tone.MetalSynth({
     frequency: 200,
@@ -28,29 +33,54 @@ export function createAudioEngine() {
     modulationIndex: 32,
     resonance: 4000,
     octaves: 1.5
-  }).toDestination();
+  }).connect(drumChannel);
+
+  // Set individual drum synth levels (relative to channel)
+  kick.volume.value = 0;
+  snare.volume.value = -4;
+  hihat.volume.value = -14;
 
   // Bass synth
   const bass = new Tone.MonoSynth({
     oscillator: { type: 'sawtooth' },
     envelope: { attack: 0.01, decay: 0.3, sustain: 0.4, release: 0.8 },
     filterEnvelope: { attack: 0.01, decay: 0.2, sustain: 0.5, release: 0.8, baseFrequency: 200, octaves: 2.6 }
-  }).toDestination();
+  }).connect(bassChannel);
 
   // Lead synth
   const lead = new Tone.PolySynth(Tone.Synth, {
     oscillator: { type: 'triangle' },
     envelope: { attack: 0.02, decay: 0.2, sustain: 0.6, release: 0.8 }
-  }).toDestination();
+  }).connect(leadChannel);
 
-  // Set initial volume levels
-  kick.volume.value = -6;
-  snare.volume.value = -10;
-  hihat.volume.value = -20;
-  bass.volume.value = -8;
-  lead.volume.value = -12;
+  // Mixer state
+  const mixer = {
+    channels: {
+      drum: {
+        volume: drumChannel,
+        muted: false,
+        solo: false,
+        defaultVolume: -6,
+        synths: { kick, snare, hihat }
+      },
+      bass: {
+        volume: bassChannel,
+        muted: false,
+        solo: false,
+        defaultVolume: -8,
+        synth: bass
+      },
+      lead: {
+        volume: leadChannel,
+        muted: false,
+        solo: false,
+        defaultVolume: -12,
+        synth: lead
+      }
+    }
+  };
 
-  return { kick, snare, hihat, bass, lead };
+  return { kick, snare, hihat, bass, lead, mixer };
 }
 
 /**
@@ -166,4 +196,104 @@ export function stopSequences(sequences) {
     sequences.leadSequence.stop();
     sequences.leadSequence.dispose();
   }
+}
+
+// ========== Mixer Controls ==========
+
+/**
+ * Sets the volume for a specific channel
+ * @param {object} mixer - Mixer object
+ * @param {string} channel - Channel name ('drum', 'bass', 'lead')
+ * @param {number} db - Volume in decibels (-60 to 0)
+ */
+export function setChannelVolume(mixer, channel, db) {
+  if (mixer.channels[channel]) {
+    mixer.channels[channel].volume.volume.value = db;
+  }
+}
+
+/**
+ * Toggles mute for a specific channel
+ * @param {object} mixer - Mixer object
+ * @param {string} channel - Channel name
+ * @returns {boolean} New mute state
+ */
+export function toggleMute(mixer, channel) {
+  if (!mixer.channels[channel]) return false;
+
+  const ch = mixer.channels[channel];
+  ch.muted = !ch.muted;
+
+  // Update solo state first (solo overrides mute)
+  updateChannelStates(mixer);
+
+  return ch.muted;
+}
+
+/**
+ * Toggles solo for a specific channel
+ * @param {object} mixer - Mixer object
+ * @param {string} channel - Channel name
+ * @returns {boolean} New solo state
+ */
+export function toggleSolo(mixer, channel) {
+  if (!mixer.channels[channel]) return false;
+
+  const ch = mixer.channels[channel];
+  ch.solo = !ch.solo;
+
+  // Update all channel states
+  updateChannelStates(mixer);
+
+  return ch.solo;
+}
+
+/**
+ * Updates all channel states based on solo/mute logic
+ * @param {object} mixer - Mixer object
+ */
+function updateChannelStates(mixer) {
+  const channels = Object.values(mixer.channels);
+  const anySolo = channels.some(ch => ch.solo);
+
+  channels.forEach(ch => {
+    if (anySolo) {
+      // Solo mode: mute all non-soloed channels
+      ch.volume.mute = !ch.solo;
+    } else {
+      // Normal mode: respect mute state
+      ch.volume.mute = ch.muted;
+    }
+  });
+}
+
+/**
+ * Resets all mixer controls to default
+ * @param {object} mixer - Mixer object
+ */
+export function resetMixer(mixer) {
+  Object.entries(mixer.channels).forEach(([name, ch]) => {
+    ch.volume.volume.value = ch.defaultVolume;
+    ch.muted = false;
+    ch.solo = false;
+    ch.volume.mute = false;
+  });
+}
+
+/**
+ * Gets the current mixer state
+ * @param {object} mixer - Mixer object
+ * @returns {object} Current state of all channels
+ */
+export function getMixerState(mixer) {
+  const state = {};
+  Object.entries(mixer.channels).forEach(([name, ch]) => {
+    state[name] = {
+      volume: ch.volume.volume.value,
+      muted: ch.muted,
+      solo: ch.solo,
+      actuallyMuted: ch.volume.mute // Final mute state after solo logic
+    };
+  });
+  return state;
 }
