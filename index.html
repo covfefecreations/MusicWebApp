@@ -1,0 +1,133 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>BeatGrid — Studio Edition</title>
+
+  <!-- Tailwind CDN + custom theme -->
+  <script>
+    // Tailwind quick config (studio aesthetic)
+    tailwind = { config: {
+      theme: {
+        extend: {
+          colors: {
+            studio: {
+              50: '#fbfbfc', 100:'#f7f7f8', 200:'#efeff1', 300:'#dfe0e3',
+              400:'#bfc2c8', 500:'#97a0a8', 600:'#6f7b83', 700:'#445055',
+              800:'#2b3438', 900:'#0f1416'
+            },
+            accent: { DEFAULT: '#6ee7b7', 600: '#34d399' },
+            glow: '#e6fffa'
+          },
+          boxShadow: {
+            'studio-soft': '0 6px 30px rgba(2,6,23,0.45)'
+          },
+          fontFamily: {
+            display: ['Inter', 'sans-serif'],
+            body: ['Inter', 'sans-serif']
+          }
+        }
+      }
+    } }
+  </script>
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- small custom styles -->
+  <style>
+    :root{color-scheme: dark}
+    body{background:linear-gradient(180deg,#071019 0%,#0a1116 100%);font-family:Inter,system-ui,-apple-system}
+    .card { background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01)); border:1px solid rgba(255,255,255,0.03); box-shadow:0 8px 24px rgba(2,6,23,0.6); }
+    .step { width:100%; padding-top:100%; position:relative; border-radius:6px; background:rgba(255,255,255,0.015); }
+    .step.on{ background: linear-gradient(90deg,#6ee7b7,#34d399); box-shadow:0 6px 12px rgba(46,185,128,0.12); }
+    .step span{ position:absolute; inset:0; display:block; }
+    .icon-btn:hover svg{ transform:translateY(-2px) scale(1.04); transition:all .18s ease; }
+    .muted{ color:#9fb1b0; }
+    .mono { font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, "Roboto Mono", monospace; font-size:12px }
+  </style>
+</head>
+<body class="text-studio-100 min-h-screen">
+
+  <header class="p-4 flex items-center justify-between gap-4">
+    <div class="flex items-center gap-4">
+      <!-- Logo (rings svg inline) -->
+      <div class="p-2 rounded-md card flex items-center gap-3">
+        <div class="w-10 h-10 flex items-center justify-center">
+          <svg viewBox="0 0 48 48" class="w-8 h-8" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <circle cx="24" cy="24" r="10" stroke="#6ee7b7" stroke-width="1.5" opacity="0.95"/>
+            <circle cx="24" cy="24" r="16" stroke="#34d399" stroke-width="1.2" opacity="0.7"/>
+            <circle cx="24" cy="24" r="22" stroke="#a7f3d0" stroke-width="0.9" opacity="0.45"/>
+          </svg>
+        </div>
+        <div>
+          <div class="text-sm font-semibold">BeatGrid</div>
+          <div class="text-xs muted">Studio Edition — modular patterns</div>
+        </div>
+      </div>
+      <nav class="hidden md:flex gap-3 ml-4">
+        <button id="seedRandom" class="px-3 py-1 rounded-md text-sm bg-studio-800/40 hover:bg-studio-800/60">Randomize</button>
+        <button id="formatClaude" class="px-3 py-1 rounded-md text-sm bg-studio-800/40 hover:bg-studio-800/60">Format for LLM</button>
+      </nav>
+    </div>
+
+    <div class="flex items-center gap-3">
+      <div class="text-right mr-2">
+        <div class="text-xs muted">Tempo</div>
+        <div class="font-semibold" id="tempoLabel">170 BPM</div>
+      </div>
+      <input id="tempo" type="range" min="160" max="180" value="170" class="w-40" />
+      <div class="ml-4 flex items-center gap-2">
+        <button id="exportAll" class="px-3 py-2 rounded-md bg-accent/10 border border-accent text-accent text-sm">Export JSON</button>
+        <button id="saveGist" title="Save to GitHub Gist (token required)" class="px-3 py-2 rounded-md bg-studio-800/50 text-sm muted">Save Gist</button>
+      </div>
+    </div>
+  </header>
+
+  <main class="p-6 grid grid-cols-1 md:grid-cols-3 gap-6">
+    <!-- DRUMS -->
+    <section id="drumCol" class="">
+      <div class="flex items-center justify-between mb-3">
+        <h2 class="text-lg font-semibold">Drum Kits</h2>
+        <div class="muted text-sm">2 bars — 32 steps</div>
+      </div>
+      <div id="drumGrid" class="grid grid-cols-1 gap-4"></div>
+    </section>
+
+    <!-- BASS -->
+    <section id="bassCol" class="">
+      <div class="flex items-center justify-between mb-3">
+        <h2 class="text-lg font-semibold">Bass & Rhythm</h2>
+        <div class="muted text-sm">Hints / progressions</div>
+      </div>
+      <div id="bassGrid" class="grid grid-cols-1 gap-4"></div>
+    </section>
+
+    <!-- LEADS -->
+    <section id="leadCol" class="">
+      <div class="flex items-center justify-between mb-3">
+        <h2 class="text-lg font-semibold">Leads / Motifs</h2>
+        <div class="muted text-sm">Scales • Degrees</div>
+      </div>
+      <div id="leadGrid" class="grid grid-cols-1 gap-4"></div>
+    </section>
+  </main>
+
+  <footer class="p-4 flex flex-col md:flex-row items-center justify-between gap-4">
+    <div class="text-sm muted">Loop • Listen • Recalibrate — studio motif</div>
+    <div class="flex gap-2">
+      <button id="copySelection" class="px-3 py-2 rounded-md bg-studio-800/50 text-sm muted">Copy Selected (LLM)</button>
+      <button id="downloadSelection" class="px-3 py-2 rounded-md bg-studio-800/50 text-sm muted">Download Selected JSON</button>
+    </div>
+  </footer>
+
+  <!-- JS modules -->
+  <script type="module">
+    import { drums, basses, leads } from './js/data.js';
+    import { icons } from './js/icons.js';
+    import { renderApp } from './js/app.js';
+
+    // expose data to app
+    renderApp({ drums, basses, leads, icons });
+  </script>
+</body>
+</html>
