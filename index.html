@@ -63,21 +63,115 @@
       border-radius:6px;
       background:rgba(255,255,255,0.02);
       border: 1px solid rgba(255,255,255,0.05);
-      transition: all 0.2s ease;
+      transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+      cursor: pointer;
+      overflow: hidden;
     }
+
+    /* Subtle pulse on hover */
     .step:hover {
-      background:rgba(255,255,255,0.04);
-      transform: scale(1.05);
+      background:rgba(255,255,255,0.06);
+      transform: scale(1.08);
+      border-color: rgba(110,231,183,0.2);
+      animation: stepPulse 1.5s cubic-bezier(0.4, 0, 0.6, 1) infinite;
     }
+
+    /* Active step state */
     .step.on{
       background: linear-gradient(135deg,#6ee7b7,#34d399);
       box-shadow:0 4px 16px rgba(46,185,128,0.25), 0 0 12px rgba(110,231,183,0.15);
-      border-color: rgba(110,231,183,0.3);
+      border-color: rgba(110,231,183,0.4);
+      transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
     }
+
+    /* Active step hover with enhanced glow */
     .step.on:hover {
-      box-shadow:0 6px 20px rgba(46,185,128,0.35), 0 0 16px rgba(110,231,183,0.25);
+      box-shadow:0 6px 24px rgba(46,185,128,0.45), 0 0 20px rgba(110,231,183,0.3);
+      transform: scale(1.1);
+      animation: stepGlow 1.2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
     }
-    .step span{ position:absolute; inset:0; display:block; }
+
+    /* Progressive disclosure: show step number on hover */
+    .step span {
+      position:absolute;
+      inset:0;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      font-size:9px;
+      font-weight:600;
+      color:transparent;
+      transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+      pointer-events: none;
+    }
+
+    .step:hover span {
+      color:rgba(255,255,255,0.5);
+      font-size:10px;
+    }
+
+    .step.on span {
+      color:rgba(15,20,22,0.6);
+    }
+
+    .step.on:hover span {
+      color:rgba(15,20,22,0.8);
+      font-size:11px;
+    }
+
+    /* Pulse animation for inactive steps */
+    @keyframes stepPulse {
+      0%, 100% {
+        box-shadow: 0 0 0 rgba(110,231,183,0.1);
+      }
+      50% {
+        box-shadow: 0 0 12px rgba(110,231,183,0.2), 0 0 4px rgba(110,231,183,0.15);
+      }
+    }
+
+    /* Glow animation for active steps */
+    @keyframes stepGlow {
+      0%, 100% {
+        box-shadow:0 6px 24px rgba(46,185,128,0.45), 0 0 20px rgba(110,231,183,0.3);
+      }
+      50% {
+        box-shadow:0 8px 32px rgba(46,185,128,0.6), 0 0 28px rgba(110,231,183,0.45);
+      }
+    }
+
+    /* Ripple effect on click */
+    @keyframes ripple {
+      from {
+        transform: scale(0);
+        opacity: 0.6;
+      }
+      to {
+        transform: scale(2.5);
+        opacity: 0;
+      }
+    }
+
+    .step::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(110,231,183,0.6), transparent 70%);
+      transform: scale(0);
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    .step:active::after {
+      animation: ripple 0.6s cubic-bezier(0, 0, 0.2, 1);
+    }
+
+    /* Keyboard focus state for accessibility */
+    .step:focus-visible {
+      outline: 2px solid rgba(110,231,183,0.6);
+      outline-offset: 2px;
+      transform: scale(1.06);
+    }
 
     /* Icon and button enhancements */
     .icon-btn svg{
@@ -196,10 +290,6 @@
         </div>
         <input id="tempo" type="range" min="160" max="180" value="170" class="w-32 md:w-40" />
       </div>
-      <div class="hidden md:flex items-center gap-2">
-        <button id="exportAll" class="px-3 py-2 rounded-lg bg-accent/10 border border-accent/30 text-accent text-sm hover:bg-accent/20">Export JSON</button>
-        <button id="saveGist" title="Save to GitHub Gist (token required)" class="px-3 py-2 rounded-lg bg-studio-800/50 border border-studio-700/40 text-sm muted hover:bg-studio-800/70">Save Gist</button>
-      </div>
     </div>
   </header>
 
@@ -234,12 +324,115 @@
 
   <footer class="p-4 lg:p-6 flex flex-col md:flex-row items-center justify-between gap-3 md:gap-4 border-t border-studio-700/20">
     <div class="text-xs md:text-sm muted tracking-wide">Loop • Listen • Recalibrate — studio motif</div>
-    <div class="flex flex-wrap gap-2 justify-center md:justify-end">
+
+    <!-- Desktop: Show all buttons -->
+    <div class="hidden md:flex flex-wrap gap-2 justify-end">
       <button id="copySelection" class="px-3 py-2 rounded-lg bg-studio-800/50 border border-studio-700/40 text-sm muted hover:bg-studio-800/70 hover:text-accent transition-colors">Copy Selected (LLM)</button>
-      <button id="downloadSelection" class="px-3 py-2 rounded-lg bg-studio-800/50 border border-studio-700/40 text-sm muted hover:bg-studio-800/70 hover:text-accent transition-colors">Download Selected JSON</button>
+      <button id="downloadSelection" class="px-3 py-2 rounded-lg bg-studio-800/50 border border-studio-700/40 text-sm muted hover:bg-studio-800/70 hover:text-accent transition-colors">Download Selection</button>
+      <button id="exportAll" class="px-3 py-2 rounded-lg bg-accent/10 border border-accent/30 text-accent text-sm hover:bg-accent/20 transition-colors">Export All</button>
+      <button id="saveGist" class="px-3 py-2 rounded-lg bg-studio-800/50 border border-studio-700/40 text-sm muted hover:bg-studio-800/70 transition-colors" title="Save to GitHub Gist">Save Gist</button>
+      <button id="formatClaude" class="px-3 py-2 rounded-lg bg-studio-800/50 border border-studio-700/40 text-sm muted hover:bg-studio-800/70 transition-colors">Format for LLM</button>
       <button id="clearSession" class="px-3 py-2 rounded-lg bg-studio-800/50 border border-studio-700/40 text-sm muted hover:bg-studio-800/70 hover:text-red-400 transition-colors" title="Clear saved session state">Clear Session</button>
     </div>
+
+    <!-- Mobile: Export menu button -->
+    <div class="md:hidden w-full">
+      <button id="mobileExportBtn" class="w-full min-h-[44px] px-4 py-3 rounded-lg bg-accent/10 border border-accent/30 text-accent text-base font-medium hover:bg-accent/20 transition-colors flex items-center justify-center gap-2">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/>
+        </svg>
+        <span>Export & Actions</span>
+      </button>
+    </div>
   </footer>
+
+  <!-- Mobile Export Menu (hidden by default) -->
+  <div id="mobileExportMenu" class="fixed inset-0 bg-studio-900/95 backdrop-blur-sm z-50 hidden">
+    <div class="flex flex-col h-full">
+      <!-- Menu Header -->
+      <div class="p-4 border-b border-studio-700/30 flex items-center justify-between">
+        <h3 class="text-lg font-semibold">Export & Actions</h3>
+        <button id="closeMobileMenu" class="min-h-[44px] min-w-[44px] flex items-center justify-center rounded-lg hover:bg-studio-800/50 transition-colors">
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+          </svg>
+        </button>
+      </div>
+
+      <!-- Menu Content -->
+      <div class="flex-1 overflow-y-auto p-4 space-y-3">
+        <!-- Export Section -->
+        <div class="space-y-2">
+          <div class="text-xs font-semibold text-accent uppercase tracking-wider mb-3">Export Options</div>
+
+          <button data-action="copySelection" class="mobile-menu-btn w-full min-h-[52px] px-4 py-3 rounded-lg bg-studio-800/50 border border-studio-700/40 text-left hover:bg-studio-800/70 hover:border-accent/30 transition-all flex items-center gap-3">
+            <svg class="w-5 h-5 text-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/>
+            </svg>
+            <div>
+              <div class="font-medium">Copy Selected (LLM)</div>
+              <div class="text-xs text-muted">Copy current selection as markdown</div>
+            </div>
+          </button>
+
+          <button data-action="downloadSelection" class="mobile-menu-btn w-full min-h-[52px] px-4 py-3 rounded-lg bg-studio-800/50 border border-studio-700/40 text-left hover:bg-studio-800/70 hover:border-accent/30 transition-all flex items-center gap-3">
+            <svg class="w-5 h-5 text-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M9 19l3 3m0 0l3-3m-3 3V10"/>
+            </svg>
+            <div>
+              <div class="font-medium">Download Selection</div>
+              <div class="text-xs text-muted">Save selected patterns as JSON</div>
+            </div>
+          </button>
+
+          <button data-action="exportAll" class="mobile-menu-btn w-full min-h-[52px] px-4 py-3 rounded-lg bg-accent/10 border border-accent/30 text-accent text-left hover:bg-accent/20 transition-all flex items-center gap-3">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L9 8m4-4v12"/>
+            </svg>
+            <div>
+              <div class="font-medium">Export All Patterns</div>
+              <div class="text-xs opacity-75">Download complete pattern library</div>
+            </div>
+          </button>
+
+          <button data-action="formatClaude" class="mobile-menu-btn w-full min-h-[52px] px-4 py-3 rounded-lg bg-studio-800/50 border border-studio-700/40 text-left hover:bg-studio-800/70 hover:border-accent/30 transition-all flex items-center gap-3">
+            <svg class="w-5 h-5 text-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+            </svg>
+            <div>
+              <div class="font-medium">Format for LLM</div>
+              <div class="text-xs text-muted">Copy all patterns in LLM format</div>
+            </div>
+          </button>
+
+          <button data-action="saveGist" class="mobile-menu-btn w-full min-h-[52px] px-4 py-3 rounded-lg bg-studio-800/50 border border-studio-700/40 text-left hover:bg-studio-800/70 hover:border-accent/30 transition-all flex items-center gap-3">
+            <svg class="w-5 h-5 text-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7v8a2 2 0 002 2h6M8 7V5a2 2 0 012-2h4.586a1 1 0 01.707.293l4.414 4.414a1 1 0 01.293.707V15a2 2 0 01-2 2h-2M8 7H6a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2v-2"/>
+            </svg>
+            <div>
+              <div class="font-medium">Save to GitHub Gist</div>
+              <div class="text-xs text-muted">Requires GitHub token</div>
+            </div>
+          </button>
+        </div>
+
+        <!-- Session Section -->
+        <div class="space-y-2 pt-4 border-t border-studio-700/30">
+          <div class="text-xs font-semibold text-muted uppercase tracking-wider mb-3">Session</div>
+
+          <button data-action="clearSession" class="mobile-menu-btn w-full min-h-[52px] px-4 py-3 rounded-lg bg-studio-800/50 border border-studio-700/40 text-left hover:bg-studio-800/70 hover:border-red-400/30 hover:text-red-400 transition-all flex items-center gap-3">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+            </svg>
+            <div>
+              <div class="font-medium">Clear Session</div>
+              <div class="text-xs text-muted">Reset all selections and tempo</div>
+            </div>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
 
   <!-- JS modules -->
   <script type="module">

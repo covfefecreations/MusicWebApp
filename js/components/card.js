@@ -87,8 +87,11 @@ function createDetailSection(item, type) {
     for (let i = 0; i < 32; i++) {
       const step = document.createElement('div');
       step.className = 'step ' + (pattern[i] === 'X' ? 'on' : '');
-      step.title = (i + 1).toString();
-      step.innerHTML = '<span></span>';
+      step.title = `Step ${i + 1}`;
+      step.tabIndex = 0; // Enable keyboard navigation
+      step.setAttribute('role', 'button');
+      step.setAttribute('aria-label', `Step ${i + 1}, ${pattern[i] === 'X' ? 'active' : 'inactive'}`);
+      step.innerHTML = `<span>${i + 1}</span>`;
       grid.appendChild(step);
     }
     detail.appendChild(grid);
