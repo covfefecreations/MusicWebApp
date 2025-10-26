@@ -13,8 +13,8 @@
 |-----------|--------|--------|---------------|
 | 1. Refactor export logic for mobile-first clarity | ✅ Complete | `p2/refinement-engine` | _The stream flows through all channels_ |
 | 2. Enhance LLM formatting with motif tagging | ✅ Complete | `p2/refinement-engine` | _Labels become lanterns_ |
-| 3. Polish hover states & step grid transitions | 🔄 In Progress | `p2/refinement-engine` | _Every touch, a ripple_ |
-| 4. Modularize Tone.js playback for future layering | ⏳ Pending | `p2/refinement-engine` | _Sounds stack like stones_ |
+| 3. Polish hover states & step grid transitions | ✅ Complete | `p2/refinement-engine` | _Every touch, a ripple_ |
+| 4. Modularize Tone.js playback for future layering | 🔄 In Progress | `p2/refinement-engine` | _Sounds stack like stones_ |
 
 ---
 
@@ -82,18 +82,47 @@
 
 ---
 
-### Objective 3: Step Grid Polish
+### Objective 3: Step Grid Polish ✅
 
 **Goal:** Refined interactions and visual feedback
 
 **Tasks:**
-- [ ] Enhance step hover states with subtle pulse
-- [ ] Add smooth transitions between states (off/on)
-- [ ] Implement progressive disclosure for pattern details
-- [ ] Add keyboard navigation for accessibility
-- [ ] Polish animation timing curves
+- [x] Enhance step hover states with subtle pulse
+- [x] Add smooth transitions between states (off/on)
+- [x] Implement progressive disclosure for pattern details
+- [x] Add keyboard navigation for accessibility
+- [x] Polish animation timing curves
 
-**Symbolic Checkpoint:** _Every touch, a ripple_
+**Implementation:**
+- **Enhanced CSS animations:**
+  - `stepPulse` — Subtle breathing animation on inactive step hover
+  - `stepGlow` — Enhanced glow for active steps
+  - `ripple` — Click feedback with radial expansion
+  - Cubic-bezier timing curves (0.34, 1.56, 0.64, 1) for elastic feel
+- **Progressive disclosure:**
+  - Step numbers hidden by default (transparent)
+  - Fade in on hover with scale animation
+  - Higher contrast for active steps
+  - Font size scales with interaction
+- **Accessibility:**
+  - `tabIndex=0` for keyboard navigation
+  - `role="button"` for screen readers
+  - `aria-label` with step state (active/inactive)
+  - `:focus-visible` state with accent outline
+- **Visual refinements:**
+  - Hover transform scale: 1.08x (inactive), 1.1x (active)
+  - Transition duration: 0.3s (inactive), 0.4s (active)
+  - Enhanced box shadows with glow layers
+  - Ripple effect on click with ::after pseudo-element
+
+**User Experience:**
+- Touch/hover triggers subtle pulse animation
+- Step numbers reveal context on demand
+- Click provides immediate tactile feedback
+- Keyboard users can tab through steps
+- Active steps have stronger visual presence
+
+**Symbolic Checkpoint:** _Every touch, a ripple_ ✓
 
 ---
 

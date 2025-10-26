@@ -63,21 +63,115 @@
       border-radius:6px;
       background:rgba(255,255,255,0.02);
       border: 1px solid rgba(255,255,255,0.05);
-      transition: all 0.2s ease;
+      transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+      cursor: pointer;
+      overflow: hidden;
     }
+
+    /* Subtle pulse on hover */
     .step:hover {
-      background:rgba(255,255,255,0.04);
-      transform: scale(1.05);
+      background:rgba(255,255,255,0.06);
+      transform: scale(1.08);
+      border-color: rgba(110,231,183,0.2);
+      animation: stepPulse 1.5s cubic-bezier(0.4, 0, 0.6, 1) infinite;
     }
+
+    /* Active step state */
     .step.on{
       background: linear-gradient(135deg,#6ee7b7,#34d399);
       box-shadow:0 4px 16px rgba(46,185,128,0.25), 0 0 12px rgba(110,231,183,0.15);
-      border-color: rgba(110,231,183,0.3);
+      border-color: rgba(110,231,183,0.4);
+      transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
     }
+
+    /* Active step hover with enhanced glow */
     .step.on:hover {
-      box-shadow:0 6px 20px rgba(46,185,128,0.35), 0 0 16px rgba(110,231,183,0.25);
+      box-shadow:0 6px 24px rgba(46,185,128,0.45), 0 0 20px rgba(110,231,183,0.3);
+      transform: scale(1.1);
+      animation: stepGlow 1.2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
     }
-    .step span{ position:absolute; inset:0; display:block; }
+
+    /* Progressive disclosure: show step number on hover */
+    .step span {
+      position:absolute;
+      inset:0;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      font-size:9px;
+      font-weight:600;
+      color:transparent;
+      transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+      pointer-events: none;
+    }
+
+    .step:hover span {
+      color:rgba(255,255,255,0.5);
+      font-size:10px;
+    }
+
+    .step.on span {
+      color:rgba(15,20,22,0.6);
+    }
+
+    .step.on:hover span {
+      color:rgba(15,20,22,0.8);
+      font-size:11px;
+    }
+
+    /* Pulse animation for inactive steps */
+    @keyframes stepPulse {
+      0%, 100% {
+        box-shadow: 0 0 0 rgba(110,231,183,0.1);
+      }
+      50% {
+        box-shadow: 0 0 12px rgba(110,231,183,0.2), 0 0 4px rgba(110,231,183,0.15);
+      }
+    }
+
+    /* Glow animation for active steps */
+    @keyframes stepGlow {
+      0%, 100% {
+        box-shadow:0 6px 24px rgba(46,185,128,0.45), 0 0 20px rgba(110,231,183,0.3);
+      }
+      50% {
+        box-shadow:0 8px 32px rgba(46,185,128,0.6), 0 0 28px rgba(110,231,183,0.45);
+      }
+    }
+
+    /* Ripple effect on click */
+    @keyframes ripple {
+      from {
+        transform: scale(0);
+        opacity: 0.6;
+      }
+      to {
+        transform: scale(2.5);
+        opacity: 0;
+      }
+    }
+
+    .step::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(110,231,183,0.6), transparent 70%);
+      transform: scale(0);
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    .step:active::after {
+      animation: ripple 0.6s cubic-bezier(0, 0, 0.2, 1);
+    }
+
+    /* Keyboard focus state for accessibility */
+    .step:focus-visible {
+      outline: 2px solid rgba(110,231,183,0.6);
+      outline-offset: 2px;
+      transform: scale(1.06);
+    }
 
     /* Icon and button enhancements */
     .icon-btn svg{
