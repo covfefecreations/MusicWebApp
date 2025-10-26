@@ -252,6 +252,170 @@ export function renderApp({ drums, basses, leads, icons }) {
     }
   });
 
+  // ========== Mobile Export Menu ==========
+
+  const mobileExportBtn = document.getElementById('mobileExportBtn');
+  const mobileExportMenu = document.getElementById('mobileExportMenu');
+  const closeMobileMenu = document.getElementById('closeMobileMenu');
+
+  /**
+   * Opens the mobile export menu
+   */
+  function openMobileMenu() {
+    mobileExportMenu.classList.remove('hidden');
+    // Prevent body scroll when menu is open
+    document.body.style.overflow = 'hidden';
+  }
+
+  /**
+   * Closes the mobile export menu
+   */
+  function closeMobileMenuFn() {
+    mobileExportMenu.classList.add('hidden');
+    document.body.style.overflow = '';
+  }
+
+  // Open menu on button click
+  if (mobileExportBtn) {
+    mobileExportBtn.addEventListener('click', openMobileMenu);
+  }
+
+  // Close menu on X button
+  if (closeMobileMenu) {
+    closeMobileMenu.addEventListener('click', closeMobileMenuFn);
+  }
+
+  // Close menu on backdrop click
+  if (mobileExportMenu) {
+    mobileExportMenu.addEventListener('click', (e) => {
+      if (e.target === mobileExportMenu) {
+        closeMobileMenuFn();
+      }
+    });
+  }
+
+  // Handle mobile menu action buttons
+  const mobileMenuButtons = document.querySelectorAll('.mobile-menu-btn');
+  mobileMenuButtons.forEach(btn => {
+    btn.addEventListener('click', () => {
+      const action = btn.dataset.action;
+
+      // Show loading state
+      const originalHTML = btn.innerHTML;
+      btn.disabled = true;
+      btn.style.opacity = '0.6';
+
+      // Execute action based on data-action attribute
+      const actionMap = {
+        copySelection: () => {
+          const formatted = formatTriplet(selected, tempoRange.value);
+          navigator.clipboard.writeText(formatted);
+          toast('✓ Selection copied to clipboard');
+        },
+        downloadSelection: () => {
+          const out = { tempo: tempoRange.value, selected };
+          downloadJSON(out, `selection-${Date.now()}.json`);
+          toast('✓ Selection downloaded');
+        },
+        exportAll: () => {
+          const out = { tempo: tempoRange.value, drums, basses, leads };
+          downloadJSON(out, `beatgrid-${Date.now()}.json`);
+          toast('✓ Complete library exported');
+        },
+        formatClaude: () => {
+          const formatted = formatAllForLLM({ drums, basses, leads });
+          navigator.clipboard.writeText(formatted);
+          toast('✓ LLM format copied');
+        },
+        saveGist: async () => {
+          closeMobileMenuFn();
+          const token = prompt('Enter GitHub personal access token:');
+          if (!token) {
+            btn.disabled = false;
+            btn.style.opacity = '';
+            return;
+          }
+
+          const payload = {
+            description: 'BeatGrid export',
+            public: false,
+            files: {
+              'beatgrid.json': {
+                content: JSON.stringify({ drums, basses, leads }, null, 2)
+              }
+            }
+          };
+
+          try {
+            const res = await fetch('https://api.github.com/gists', {
+              method: 'POST',
+              headers: {
+                Authorization: 'token ' + token,
+                'Content-Type': 'application/json'
+              },
+              body: JSON.stringify(payload)
+            });
+            const j = await res.json();
+            if (j.html_url) {
+              toast('✓ Gist saved successfully');
+              window.open(j.html_url, '_blank');
+            } else {
+              toast('✗ Gist save failed');
+            }
+          } catch (err) {
+            toast('✗ Error saving gist');
+          }
+          return;
+        },
+        clearSession: () => {
+          closeMobileMenuFn();
+          if (confirm('Clear your saved session?\n\nThis will reset all selections and tempo.')) {
+            clearState();
+            document.querySelectorAll('.card.ring-2').forEach(card => {
+              card.classList.remove('ring-2', 'ring-accent');
+            });
+            selected.drum = null;
+            selected.bass = null;
+            selected.lead = null;
+            tempoRange.value = 170;
+            tempoLabel.textContent = '170 BPM';
+            toast('✓ Session cleared');
+          }
+          return;
+        }
+      };
+
+      // Execute the action
+      if (actionMap[action]) {
+        try {
+          const result = actionMap[action]();
+          // If it's a promise, wait for it
+          if (result instanceof Promise) {
+            result.finally(() => {
+              btn.disabled = false;
+              btn.style.opacity = '';
+              if (action !== 'saveGist' && action !== 'clearSession') {
+                setTimeout(closeMobileMenuFn, 800);
+              }
+            });
+          } else {
+            btn.disabled = false;
+            btn.style.opacity = '';
+            // Close menu after action (except for special cases)
+            if (action !== 'clearSession') {
+              setTimeout(closeMobileMenuFn, 800);
+            }
+          }
+        } catch (err) {
+          console.error('Action error:', err);
+          btn.disabled = false;
+          btn.style.opacity = '';
+          toast('✗ Action failed');
+        }
+      }
+    });
+  });
+
   // ========== Render Cards ==========
 
   drums.forEach(d => {
