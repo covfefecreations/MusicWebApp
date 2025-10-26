@@ -1,0 +1,82 @@
+[
+  {
+    "id": "d1",
+    "title": "Rising Steam",
+    "bpm": 172,
+    "mood": "Tense • Cinematic",
+    "icon": "rings",
+    "pattern": "X---X---X---X---X---X---X---X---"
+  },
+  {
+    "id": "d2",
+    "title": "Trap Stutter",
+    "bpm": 165,
+    "mood": "Stuttering • Dark",
+    "icon": "waveform",
+    "pattern": "X--X-X--X---X--X--X--X---X-X--"
+  },
+  {
+    "id": "d3",
+    "title": "Solar Pulse",
+    "bpm": 168,
+    "mood": "Propulsive • Warm",
+    "icon": "rings",
+    "pattern": "X---X-X--X---X---X-X--X---X---"
+  },
+  {
+    "id": "d4",
+    "title": "Broken Clock",
+    "bpm": 170,
+    "mood": "Off-kilter • Nervous",
+    "icon": "compass",
+    "pattern": "X--X--X-XX---X--X--XX--X--X--X-"
+  },
+  {
+    "id": "d5",
+    "title": "Neon Rush",
+    "bpm": 174,
+    "mood": "Bright • Urgent",
+    "icon": "waveform",
+    "pattern": "X-X-X-X-XX-X-X-XX-X-X-X-X-XX-X-"
+  },
+  {
+    "id": "d6",
+    "title": "Underflow",
+    "bpm": 162,
+    "mood": "Deep • Sparse",
+    "icon": "rings",
+    "pattern": "X-------X---X-------X---X-------"
+  },
+  {
+    "id": "d7",
+    "title": "Metro Snap",
+    "bpm": 170,
+    "mood": "Tight • Driving",
+    "icon": "rings",
+    "pattern": "X--X--X-X--X--X-X--X--X-X--X--X-"
+  },
+  {
+    "id": "d8",
+    "title": "Glass Hat",
+    "bpm": 168,
+    "mood": "Shimmery • Crisp",
+    "icon": "heart",
+    "pattern": "-X-X-X-X-X-X-X-X-X-X-X-X-X-X-X-"
+  },
+  {
+    "id": "d9",
+    "title": "Pulse Engine",
+    "bpm": 176,
+    "mood": "Relentless • Hypnotic",
+    "icon": "waveform",
+    "pattern": "X-X--X-X-X--X-X-X--X-X-X--X-X--"
+  },
+  {
+    "id": "d10",
+    "title": "Lazy Groove",
+    "bpm": 160,
+    "mood": "Laidback • Warm",
+    "icon": "heart",
+    "pattern": "X---X---X-----X---X---X-----X---"
+  }
+]

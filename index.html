@@ -40,52 +40,165 @@
   <style>
     :root{color-scheme: dark}
     body{background:linear-gradient(180deg,#071019 0%,#0a1116 100%);font-family:Inter,system-ui,-apple-system}
-    .card { background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01)); border:1px solid rgba(255,255,255,0.03); box-shadow:0 8px 24px rgba(2,6,23,0.6); }
-    .step { width:100%; padding-top:100%; position:relative; border-radius:6px; background:rgba(255,255,255,0.015); }
-    .step.on{ background: linear-gradient(90deg,#6ee7b7,#34d399); box-shadow:0 6px 12px rgba(46,185,128,0.12); }
+
+    /* Enhanced card styling with smooth transitions */
+    .card {
+      background: linear-gradient(135deg, rgba(255,255,255,0.025), rgba(255,255,255,0.01));
+      border:1px solid rgba(255,255,255,0.04);
+      box-shadow:0 8px 32px rgba(2,6,23,0.7);
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      backdrop-filter: blur(8px);
+    }
+    .card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 12px 40px rgba(2,6,23,0.8), 0 0 0 1px rgba(110,231,183,0.1);
+      border-color: rgba(110,231,183,0.15);
+    }
+
+    /* Step sequencer grid with enhanced visual feedback */
+    .step {
+      width:100%;
+      padding-top:100%;
+      position:relative;
+      border-radius:6px;
+      background:rgba(255,255,255,0.02);
+      border: 1px solid rgba(255,255,255,0.05);
+      transition: all 0.2s ease;
+    }
+    .step:hover {
+      background:rgba(255,255,255,0.04);
+      transform: scale(1.05);
+    }
+    .step.on{
+      background: linear-gradient(135deg,#6ee7b7,#34d399);
+      box-shadow:0 4px 16px rgba(46,185,128,0.25), 0 0 12px rgba(110,231,183,0.15);
+      border-color: rgba(110,231,183,0.3);
+    }
+    .step.on:hover {
+      box-shadow:0 6px 20px rgba(46,185,128,0.35), 0 0 16px rgba(110,231,183,0.25);
+    }
     .step span{ position:absolute; inset:0; display:block; }
-    .icon-btn:hover svg{ transform:translateY(-2px) scale(1.04); transition:all .18s ease; }
+
+    /* Icon and button enhancements */
+    .icon-btn svg{
+      transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+      filter: drop-shadow(0 2px 8px rgba(110,231,183,0.15));
+    }
+    .icon-btn:hover svg{
+      transform:translateY(-3px) scale(1.08);
+      filter: drop-shadow(0 4px 12px rgba(110,231,183,0.3));
+    }
+
+    /* Button hover states */
+    button {
+      transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    button:hover:not(:disabled) {
+      transform: translateY(-1px);
+    }
+    button:active:not(:disabled) {
+      transform: translateY(0);
+    }
+
+    /* Primary accent button glow effect */
+    #playBtn {
+      box-shadow: 0 4px 16px rgba(110,231,183,0.2);
+    }
+    #playBtn:hover:not(:disabled) {
+      box-shadow: 0 6px 24px rgba(110,231,183,0.35);
+      transform: translateY(-2px);
+    }
+
+    /* Range slider enhancement */
+    input[type="range"] {
+      cursor: pointer;
+      -webkit-appearance: none;
+      appearance: none;
+      background: rgba(255,255,255,0.1);
+      border-radius: 8px;
+      height: 6px;
+    }
+    input[type="range"]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #6ee7b7, #34d399);
+      cursor: pointer;
+      box-shadow: 0 2px 8px rgba(110,231,183,0.3);
+      transition: all 0.2s ease;
+    }
+    input[type="range"]::-webkit-slider-thumb:hover {
+      transform: scale(1.15);
+      box-shadow: 0 4px 12px rgba(110,231,183,0.5);
+    }
+    input[type="range"]::-moz-range-thumb {
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #6ee7b7, #34d399);
+      cursor: pointer;
+      border: none;
+      box-shadow: 0 2px 8px rgba(110,231,183,0.3);
+    }
+
     .muted{ color:#9fb1b0; }
     .mono { font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, "Roboto Mono", monospace; font-size:12px }
+
+    /* Smooth fade-in animation for cards */
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .card {
+      animation: fadeIn 0.4s ease-out backwards;
+    }
+    .card:nth-child(2) { animation-delay: 0.05s; }
+    .card:nth-child(3) { animation-delay: 0.1s; }
+    .card:nth-child(4) { animation-delay: 0.15s; }
+    .card:nth-child(5) { animation-delay: 0.2s; }
   </style>
 </head>
 <body class="text-studio-100 min-h-screen">
 
-  <header class="p-4 flex items-center justify-between gap-4">
-    <div class="flex items-center gap-4">
+  <header class="p-4 lg:p-6 flex flex-wrap items-center justify-between gap-4">
+    <div class="flex items-center gap-2 md:gap-4">
       <!-- Logo (rings svg inline) -->
-      <div class="p-2 rounded-md card flex items-center gap-3">
-        <div class="w-10 h-10 flex items-center justify-center">
-          <svg viewBox="0 0 48 48" class="w-8 h-8" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <div class="p-2 md:p-3 rounded-lg card flex items-center gap-2 md:gap-3">
+        <div class="w-8 h-8 md:w-10 md:h-10 flex items-center justify-center">
+          <svg viewBox="0 0 48 48" class="w-6 h-6 md:w-8 md:h-8" fill="none" xmlns="http://www.w3.org/2000/svg">
             <circle cx="24" cy="24" r="10" stroke="#6ee7b7" stroke-width="1.5" opacity="0.95"/>
             <circle cx="24" cy="24" r="16" stroke="#34d399" stroke-width="1.2" opacity="0.7"/>
             <circle cx="24" cy="24" r="22" stroke="#a7f3d0" stroke-width="0.9" opacity="0.45"/>
           </svg>
         </div>
         <div>
-          <div class="text-sm font-semibold">BeatGrid</div>
-          <div class="text-xs muted">Studio Edition — modular patterns</div>
+          <div class="text-sm md:text-base font-semibold tracking-tight">BeatGrid</div>
+          <div class="text-xs muted hidden sm:block">Studio Edition — modular patterns</div>
         </div>
       </div>
-      <nav class="hidden md:flex gap-3 ml-4">
-        <button id="seedRandom" class="px-3 py-1 rounded-md text-sm bg-studio-800/40 hover:bg-studio-800/60">Randomize</button>
-        <button id="formatClaude" class="px-3 py-1 rounded-md text-sm bg-studio-800/40 hover:bg-studio-800/60">Format for LLM</button>
+      <nav class="hidden lg:flex gap-2 xl:gap-3 ml-2 xl:ml-4">
+        <button id="seedRandom" class="px-3 py-1.5 rounded-lg text-sm bg-studio-800/40 hover:bg-studio-800/70 border border-studio-700/40">Randomize</button>
+        <button id="formatClaude" class="px-3 py-1.5 rounded-lg text-sm bg-studio-800/40 hover:bg-studio-800/70 border border-studio-700/40">Format for LLM</button>
       </nav>
     </div>
 
-    <div class="flex items-center gap-3">
-      <div class="ml-4 flex items-center gap-2">
-        <button id="playBtn" class="px-4 py-2 rounded-md bg-accent border border-accent text-studio-900 font-semibold text-sm">▶ Play</button>
-        <button id="stopBtn" class="px-4 py-2 rounded-md bg-studio-800/50 text-sm muted" disabled>■ Stop</button>
+    <div class="flex flex-wrap items-center gap-2 md:gap-3">
+      <div class="flex items-center gap-2">
+        <button id="playBtn" class="px-3 md:px-4 py-1.5 md:py-2 rounded-lg bg-accent border border-accent text-studio-900 font-semibold text-sm hover:bg-accent-600">▶ Play</button>
+        <button id="stopBtn" class="px-3 md:px-4 py-1.5 md:py-2 rounded-lg bg-studio-800/50 border border-studio-700/40 text-sm muted" disabled>■ Stop</button>
       </div>
-      <div class="text-right mr-2 ml-4">
-        <div class="text-xs muted">Tempo</div>
-        <div class="font-semibold" id="tempoLabel">170 BPM</div>
+      <div class="hidden sm:flex items-center gap-2 md:gap-3">
+        <div class="text-right">
+          <div class="text-xs muted">Tempo</div>
+          <div class="font-semibold text-sm" id="tempoLabel">170 BPM</div>
+        </div>
+        <input id="tempo" type="range" min="160" max="180" value="170" class="w-32 md:w-40" />
       </div>
-      <input id="tempo" type="range" min="160" max="180" value="170" class="w-40" />
-      <div class="ml-4 flex items-center gap-2">
-        <button id="exportAll" class="px-3 py-2 rounded-md bg-accent/10 border border-accent text-accent text-sm">Export JSON</button>
-        <button id="saveGist" title="Save to GitHub Gist (token required)" class="px-3 py-2 rounded-md bg-studio-800/50 text-sm muted">Save Gist</button>
+      <div class="hidden md:flex items-center gap-2">
+        <button id="exportAll" class="px-3 py-2 rounded-lg bg-accent/10 border border-accent/30 text-accent text-sm hover:bg-accent/20">Export JSON</button>
+        <button id="saveGist" title="Save to GitHub Gist (token required)" class="px-3 py-2 rounded-lg bg-studio-800/50 border border-studio-700/40 text-sm muted hover:bg-studio-800/70">Save Gist</button>
       </div>
     </div>
   </header>
@@ -119,11 +232,11 @@
     </section>
   </main>
 
-  <footer class="p-4 flex flex-col md:flex-row items-center justify-between gap-4">
-    <div class="text-sm muted">Loop • Listen • Recalibrate — studio motif</div>
-    <div class="flex gap-2">
-      <button id="copySelection" class="px-3 py-2 rounded-md bg-studio-800/50 text-sm muted">Copy Selected (LLM)</button>
-      <button id="downloadSelection" class="px-3 py-2 rounded-md bg-studio-800/50 text-sm muted">Download Selected JSON</button>
+  <footer class="p-4 lg:p-6 flex flex-col md:flex-row items-center justify-between gap-3 md:gap-4 border-t border-studio-700/20">
+    <div class="text-xs md:text-sm muted tracking-wide">Loop • Listen • Recalibrate — studio motif</div>
+    <div class="flex flex-wrap gap-2 justify-center md:justify-end">
+      <button id="copySelection" class="px-3 py-2 rounded-lg bg-studio-800/50 border border-studio-700/40 text-sm muted hover:bg-studio-800/70 hover:text-accent transition-colors">Copy Selected (LLM)</button>
+      <button id="downloadSelection" class="px-3 py-2 rounded-lg bg-studio-800/50 border border-studio-700/40 text-sm muted hover:bg-studio-800/70 hover:text-accent transition-colors">Download Selected JSON</button>
     </div>
   </footer>
 
