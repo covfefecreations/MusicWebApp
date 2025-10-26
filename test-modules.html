@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Module Load Test</title>
+</head>
+<body>
+    <h1>Testing Module Imports</h1>
+    <div id="status">Loading...</div>
+
+    <script type="module">
+        const status = document.getElementById('status');
+        const results = [];
+
+        try {
+            results.push('✓ Script module loaded');
+
+            // Test data.js import
+            import('./js/data.js').then(data => {
+                results.push('✓ data.js loaded');
+                results.push(`  - drums: ${data.drums?.length || 0} items`);
+                results.push(`  - basses: ${data.basses?.length || 0} items`);
+                results.push(`  - leads: ${data.leads?.length || 0} items`);
+                status.innerHTML = results.join('<br>');
+            }).catch(err => {
+                results.push('✗ data.js FAILED: ' + err.message);
+                status.innerHTML = results.join('<br>');
+            });
+
+            // Test formatters import
+            import('./js/utils/formatters.js').then(fmt => {
+                results.push('✓ formatters.js loaded');
+                status.innerHTML = results.join('<br>');
+            }).catch(err => {
+                results.push('✗ formatters.js FAILED: ' + err.message);
+                status.innerHTML = results.join('<br>');
+            });
+
+            // Test motifTags import
+            import('./js/utils/motifTags.js').then(tags => {
+                results.push('✓ motifTags.js loaded');
+                status.innerHTML = results.join('<br>');
+            }).catch(err => {
+                results.push('✗ motifTags.js FAILED: ' + err.message);
+                status.innerHTML = results.join('<br>');
+            });
+
+        } catch(err) {
+            status.innerHTML = '✗ ERROR: ' + err.message;
+        }
+    </script>
+</body>
+</html>

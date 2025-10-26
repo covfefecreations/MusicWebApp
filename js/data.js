@@ -14,7 +14,7 @@ async function loadJSON(path) {
   return response.json();
 }
 
-// Load all data files
-export const drums = await loadJSON('../data/drums.json');
-export const basses = await loadJSON('../data/basses.json');
-export const leads = await loadJSON('../data/leads.json');
+// Load all data files (paths relative to index.html)
+export const drums = await loadJSON('./data/drums.json');
+export const basses = await loadJSON('./data/basses.json');
+export const leads = await loadJSON('./data/leads.json');
